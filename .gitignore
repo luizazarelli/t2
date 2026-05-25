@@ -1,0 +1,14 @@
+*.o
+*.a
+ted
+
+tst/unity.c
+tst/unity.h
+tst/unity_internals.h
+
+*.svg
+*.txt
+
+*.swp
+*~
+.vscode/

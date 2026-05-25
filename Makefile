@@ -1,0 +1,58 @@
+CC     = gcc
+CFLAGS = -std=c99 -fstack-protector-all -Wall -Wextra -g
+LFLAGS = -lm
+
+SRC = src
+TST = tst
+UNITY = $(TST)/unity
+
+OBJS = $(SRC)/main.o \
+       $(SRC)/libs.o \
+       $(SRC)/quadra.o \
+       $(SRC)/svg.o \
+       $(SRC)/graph.o \
+       $(SRC)/paths.o \
+       $(SRC)/system.o \
+       $(SRC)/qry.o
+
+PROJECT = ted
+
+$(PROJECT): $(OBJS)
+	$(CC) $(CFLAGS) -o $(PROJECT) $(OBJS) $(LFLAGS)
+
+$(SRC)/%.o: $(SRC)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+UNITY_OBJ = $(UNITY)/unity.o
+
+$(UNITY)/unity.o: $(UNITY)/unity.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+t_libs: $(UNITY_OBJ) $(TST)/t_libs.o $(SRC)/libs.o
+	$(CC) $(CFLAGS) -o $(TST)/t_libs $(UNITY_OBJ) $(TST)/t_libs.o $(SRC)/libs.o $(LFLAGS)
+	./$(TST)/t_libs
+
+t_quadra: $(UNITY_OBJ) $(TST)/t_quadra.o $(SRC)/quadra.o $(SRC)/libs.o
+	$(CC) $(CFLAGS) -o $(TST)/t_quadra $(UNITY_OBJ) $(TST)/t_quadra.o $(SRC)/quadra.o $(SRC)/libs.o $(LFLAGS)
+	./$(TST)/t_quadra
+
+t_graph: $(UNITY_OBJ) $(TST)/t_graph.o $(SRC)/graph.o $(SRC)/libs.o
+	$(CC) $(CFLAGS) -o $(TST)/t_graph $(UNITY_OBJ) $(TST)/t_graph.o $(SRC)/graph.o $(SRC)/libs.o $(LFLAGS)
+	./$(TST)/t_graph
+
+t_paths: $(UNITY_OBJ) $(TST)/t_paths.o $(SRC)/paths.o $(SRC)/graph.o $(SRC)/libs.o
+	$(CC) $(CFLAGS) -o $(TST)/t_paths $(UNITY_OBJ) $(TST)/t_paths.o $(SRC)/paths.o $(SRC)/graph.o $(SRC)/libs.o $(LFLAGS)
+	./$(TST)/t_paths
+
+tstall: t_libs t_quadra t_graph t_paths
+
+BED =
+BSD =
+
+run:
+	./$(PROJECT) -e $(BED) -f $(GEO) -q $(QRY) -v $(VIA) -o $(BSD)
+
+clean:
+	rm -f $(SRC)/*.o $(TST)/*.o $(UNITY)/*.o $(PROJECT) $(TST)/t_libs $(TST)/t_quadra $(TST)/t_graph $(TST)/t_paths
+
+.PHONY: clean tstall run t_libs t_quadra t_graph t_paths
