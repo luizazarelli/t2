@@ -1,5 +1,5 @@
 CC     = gcc
-CFLAGS = -std=c99 -fstack-protector-all -Wall -Wextra -g
+CFLAGS = -std=c99 -fstack-protector-all -Wall -Wextra -g -DUNITY_INCLUDE_DOUBLE
 LFLAGS = -lm
 
 SRC = src
