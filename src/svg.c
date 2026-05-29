@@ -3,7 +3,7 @@
 FILE *svg_criar(const char *caminho, double largura, double altura) {
     if (caminho == NULL)
         return NULL;
-    FILE *f = fopen(caminho, "w");
+    FILE *f = fopen(caminho, "w+");
     if (f == NULL)
         return NULL;
     fprintf(f, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
