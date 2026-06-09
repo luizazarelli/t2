@@ -115,7 +115,7 @@ Caminho *caminho_calcularDistancia(Grafo *g, char *ori, char *dst) {
 }
 
 Caminho *caminho_calcularTempo(Grafo *g, char *ori, char *dst) {
-    return dijkstra(g, ori, dst, peso_tempo);
+    return dijkstra(g, ori, dst, peso_dist);
 }
 
 void caminho_destruir(Caminho **c) {
@@ -300,8 +300,6 @@ CompConexos *scc_calcular(Grafo *g) {
         free(ctx.stk); free(ctx.comp);
         return NULL;
     }
-
-    for (int i = 0; i < nv; i++) ctx.dfs_num[i] = -1;
 
     for (int i = 0; i < nv; i++) {
         if (ctx.dfs_num[i] == -1)
