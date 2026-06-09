@@ -77,7 +77,7 @@ void sistema_lerGeo(Sistema *s, char *caminho) {
             double x, y, w, h;
             fscanf(f, "%63s %lf %lf %lf %lf", cep, &x, &y, &w, &h);
             Quadra *q = quadra_criar(cep, x, y, w, h);
-            quadra_definirCores(q, sw, cstrk, cfill);
+            quadra_definirCores(q, sw, cfill, cstrk);
             tabelaQuadra_inserir(s->tabela, q);
             if (s->nquadras == s->capquadras) {
                 s->capquadras *= 2;
