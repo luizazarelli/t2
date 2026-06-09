@@ -113,4 +113,14 @@ double sistema_getAltura(Sistema *s);
     saida:   dimensao em pixels, ou 0.0 se s for NULL.
 */
 
+double sistema_getDx(Sistema *s);
+double sistema_getDy(Sistema *s);
+/*
+    retornam o deslocamento aplicado a todas as coordenadas no svg para acomodar
+    valores negativos. deve ser somado a qualquer coordenada geografica antes de
+    desenhar no svg via modulos externos (ex: qry).
+    entrada: s: sistema.
+    saida:   deslocamento em pixels, ou 0.0 se s for NULL.
+*/
+
 #endif

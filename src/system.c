@@ -203,3 +203,6 @@ double sistema_getAltura(Sistema *s) {
         return 600.0;
     return s->max_y - s->min_y + 2 * MARGEM;
 }
+
+double sistema_getDx(Sistema *s) { return s ? s->dx : 0.0; }
+double sistema_getDy(Sistema *s) { return s ? s->dy : 0.0; }

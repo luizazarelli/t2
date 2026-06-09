@@ -88,21 +88,18 @@ void qry_registrar(QryEstado *q, Sistema *s, int reg, char *cep, char face, doub
 
     FILE *svg = sistema_getSvg(s);
     FILE *txt = sistema_getTxt(s);
-    double dx  = sistema_getLargura(s) - (sistema_getAltura(s) - py);
-    double dy  = sistema_getLargura(s);
 
     if (svg != NULL) {
+        double svgx  = px + sistema_getDx(s);
         double altura = sistema_getAltura(s);
-        double desl_x = px + (sistema_getLargura(s) - sistema_getLargura(s));
         fprintf(svg,
             "<line x1=\"%.2f\" y1=\"0\" x2=\"%.2f\" y2=\"%.2f\" "
             "stroke=\"red\" stroke-width=\"1\" stroke-dasharray=\"4,4\"/>\n",
-            px, px, altura);
+            svgx, svgx, altura);
         fprintf(svg,
             "<text x=\"%.2f\" y=\"12\" font-size=\"10\" fill=\"red\" "
             "text-anchor=\"middle\">R%d</text>\n",
-            px, reg);
-        (void)dx; (void)dy; (void)desl_x;
+            svgx, reg);
     }
     if (txt != NULL)
         fprintf(txt, "R%d: (%.2f, %.2f)\n", reg, px, py);
@@ -174,16 +171,13 @@ void qry_regs(Sistema *s, double vl) {
             if (xmax < xmin)
                 continue;
             double margem = 10.0;
-            double larg = sistema_getLargura(s);
-            double alt  = sistema_getAltura(s);
-            double ox = larg - (sistema_getLargura(s));
-            double oy = alt  - (sistema_getAltura(s));
-            (void)ox; (void)oy;
+            double dx = sistema_getDx(s);
+            double dy = sistema_getDy(s);
             const char *cor = CORES_SCC[c % N_CORES];
             fprintf(svg,
                 "<rect x=\"%.2f\" y=\"%.2f\" width=\"%.2f\" height=\"%.2f\" "
                 "fill=\"%s\" fill-opacity=\"0.5\" stroke=\"%s\" stroke-width=\"1\"/>\n",
-                xmin - margem, ymin - margem,
+                xmin + dx - margem, ymin + dy - margem,
                 xmax - xmin + 2 * margem, ymax - ymin + 2 * margem,
                 cor, cor);
         }
@@ -216,11 +210,14 @@ void qry_exp(Sistema *s, double vl) {
         if (svg != NULL) {
             Vertice *ori = grafo_buscarVertice(g, aresta_getOri(a));
             Vertice *dst = grafo_buscarVertice(g, aresta_getDst(a));
-            if (ori != NULL && dst != NULL)
+            if (ori != NULL && dst != NULL) {
+                double dx = sistema_getDx(s);
+                double dy = sistema_getDy(s);
                 svg_linha(svg,
-                          vertice_getX(ori), vertice_getY(ori),
-                          vertice_getX(dst), vertice_getY(dst),
+                          vertice_getX(ori) + dx, vertice_getY(ori) + dy,
+                          vertice_getX(dst) + dx, vertice_getY(dst) + dy,
                           "red", 3.0);
+            }
         }
     }
     agm_destruir(&agm);
@@ -289,30 +286,36 @@ void qry_percurso(QryEstado *q, Sistema *s, int reg1, int reg2, char *cc, char *
 
     if (svg != NULL) {
         static int id_percurso = 0;
+        double dx = sistema_getDx(s);
+        double dy = sistema_getDy(s);
         if (caminho_existePercurso(curto) && caminho_nVertices(curto) >= 2) {
             int n = caminho_nVertices(curto);
             double *xs = malloc(n * sizeof(double));
             double *ys = malloc(n * sizeof(double));
-            for (int i = 0; i < n; i++) {
-                xs[i] = vertice_getX(caminho_getVertice(curto, i));
-                ys[i] = vertice_getY(caminho_getVertice(curto, i));
+            if (xs != NULL && ys != NULL) {
+                for (int i = 0; i < n; i++) {
+                    xs[i] = vertice_getX(caminho_getVertice(curto, i)) + dx;
+                    ys[i] = vertice_getY(caminho_getVertice(curto, i)) + dy;
+                }
+                char id_path[32];
+                snprintf(id_path, sizeof(id_path), "curto%d", id_percurso);
+                svg_percursoAnimado(svg, id_path, xs, ys, n, cc, 2.0, cc, 6.0);
             }
-            char id_path[32];
-            snprintf(id_path, sizeof(id_path), "curto%d", id_percurso);
-            svg_percursoAnimado(svg, id_path, xs, ys, n, cc, 2.0, cc, 6.0);
             free(xs); free(ys);
         }
         if (caminho_existePercurso(rapido) && caminho_nVertices(rapido) >= 2) {
             int n = caminho_nVertices(rapido);
             double *xs = malloc(n * sizeof(double));
             double *ys = malloc(n * sizeof(double));
-            for (int i = 0; i < n; i++) {
-                xs[i] = vertice_getX(caminho_getVertice(rapido, i));
-                ys[i] = vertice_getY(caminho_getVertice(rapido, i));
+            if (xs != NULL && ys != NULL) {
+                for (int i = 0; i < n; i++) {
+                    xs[i] = vertice_getX(caminho_getVertice(rapido, i)) + dx;
+                    ys[i] = vertice_getY(caminho_getVertice(rapido, i)) + dy;
+                }
+                char id_path[32];
+                snprintf(id_path, sizeof(id_path), "rapido%d", id_percurso);
+                svg_percursoAnimado(svg, id_path, xs, ys, n, cr, 2.0, cr, 6.0);
             }
-            char id_path[32];
-            snprintf(id_path, sizeof(id_path), "rapido%d", id_percurso);
-            svg_percursoAnimado(svg, id_path, xs, ys, n, cr, 2.0, cr, 6.0);
             free(xs); free(ys);
         }
         id_percurso++;
