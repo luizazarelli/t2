@@ -44,7 +44,11 @@ t_system: $(UNITY_OBJ) $(TST)/t_system.o system.o quadra.o svg.o graph.o paths.o
 	$(CC) $(CFLAGS) -o $(TST)/t_system $(UNITY_OBJ) $(TST)/t_system.o system.o quadra.o svg.o graph.o paths.o libs.o $(LFLAGS)
 	$(TST)/t_system
 
-tstall: t_libs t_quadra t_graph t_paths t_svg t_system
+t_qry: $(UNITY_OBJ) $(TST)/t_qry.o qry.o system.o quadra.o svg.o graph.o paths.o libs.o
+	$(CC) $(CFLAGS) -o $(TST)/t_qry $(UNITY_OBJ) $(TST)/t_qry.o qry.o system.o quadra.o svg.o graph.o paths.o libs.o $(LFLAGS)
+	$(TST)/t_qry
+
+tstall: t_libs t_quadra t_graph t_paths t_svg t_system t_qry
 
 BED =
 BSD =
@@ -53,6 +57,6 @@ run:
 	$(PROJECT) -e $(BED) -f $(GEO) -q $(QRY) -v $(VIA) -o $(BSD)
 
 clean:
-	rm -f *.o $(TST)/*.o $(UNITY)/*.o $(PROJECT) $(TST)/t_libs $(TST)/t_quadra $(TST)/t_graph $(TST)/t_paths $(TST)/t_svg $(TST)/t_system
+	rm -f *.o $(TST)/*.o $(UNITY)/*.o $(PROJECT) $(TST)/t_libs $(TST)/t_quadra $(TST)/t_graph $(TST)/t_paths $(TST)/t_svg $(TST)/t_system $(TST)/t_qry
 
-.PHONY: clean tstall run t_libs t_quadra t_graph t_paths t_svg t_system
+.PHONY: clean tstall run t_libs t_quadra t_graph t_paths t_svg t_system t_qry
