@@ -190,6 +190,13 @@ void qry_regs(Sistema *s, double vl) {
     }
 
     scc_destruir(&scc);
+
+    for (int i = 0; i < nv; i++) {
+        Vertice *u = grafo_getVertice(g, i);
+        for (Aresta *a = grafo_primeiraAresta(g, vertice_getId(u)); a != NULL; a = aresta_proxima(a))
+            if (aresta_getVm(a) < vl)
+                aresta_setAtiva(a, true);
+    }
 }
 
 void qry_exp(Sistema *s, double vl) {
