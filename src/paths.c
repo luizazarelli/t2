@@ -115,7 +115,7 @@ Caminho *caminho_calcularDistancia(Grafo *g, char *ori, char *dst) {
 }
 
 Caminho *caminho_calcularTempo(Grafo *g, char *ori, char *dst) {
-    return dijkstra(g, ori, dst, peso_dist);
+    return dijkstra(g, ori, dst, peso_tempo);
 }
 
 void caminho_destruir(Caminho **c) {
