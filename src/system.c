@@ -152,11 +152,14 @@ void sistema_desenharMapa(Sistema *s) {
 
     for (int i = 0; i < s->nquadras; i++) {
         Quadra *q = s->quadras[i];
-        svg_retangulo(s->svg,
-                      quadra_getX(q) - quadra_getW(q) + s->dx,
-                      quadra_getY(q) - quadra_getH(q) + s->dy,
-                      quadra_getW(q), quadra_getH(q),
+        double rx = quadra_getX(q) - quadra_getW(q) + s->dx;
+        double ry = quadra_getY(q) - quadra_getH(q) + s->dy;
+        double rw = quadra_getW(q);
+        double rh = quadra_getH(q);
+        svg_retangulo(s->svg, rx, ry, rw, rh,
                       quadra_getCfill(q), quadra_getCstrk(q), quadra_getSw(q));
+        svg_texto(s->svg, rx + rw / 2.0, ry + rh / 2.0,
+                  quadra_getCep(q), "black", 6.0);
     }
 
     if (s->grafo == NULL)
