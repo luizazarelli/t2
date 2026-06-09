@@ -301,6 +301,8 @@ CompConexos *scc_calcular(Grafo *g) {
         return NULL;
     }
 
+    for (int i = 0; i < nv; i++) ctx.dfs_num[i] = -1;
+
     for (int i = 0; i < nv; i++) {
         if (ctx.dfs_num[i] == -1)
             tarjan_dfs(g, i, &ctx);
