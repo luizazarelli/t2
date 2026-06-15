@@ -116,15 +116,17 @@ void qry_mvm(Sistema *s, double v, double x, double y, double w, double h) {
     int nv = grafo_nVertices(g);
     for (int i = 0; i < nv; i++) {
         Vertice *u = grafo_getVertice(g, i);
+        double ux = vertice_getX(u), uy = vertice_getY(u);
+        bool ori_in = (ux >= xmin && ux <= xmax && uy >= ymin && uy <= ymax);
         for (Aresta *a = grafo_primeiraAresta(g, vertice_getId(u)); a != NULL; a = aresta_proxima(a)) {
             if (!aresta_isAtiva(a))
                 continue;
             Vertice *vv = grafo_buscarVertice(g, aresta_getDst(a));
             if (vv == NULL)
                 continue;
-            double mx = (vertice_getX(u) + vertice_getX(vv)) / 2.0;
-            double my = (vertice_getY(u) + vertice_getY(vv)) / 2.0;
-            if (mx >= xmin && mx <= xmax && my >= ymin && my <= ymax)
+            double dx = vertice_getX(vv), dy = vertice_getY(vv);
+            bool dst_in = (dx >= xmin && dx <= xmax && dy >= ymin && dy <= ymax);
+            if (ori_in != dst_in)
                 aresta_setVm(a, v);
         }
     }
@@ -157,6 +159,7 @@ void qry_regs(Sistema *s, double vl) {
         for (int c = 0; c < ncomp; c++) {
             double xmin = DBL_MAX, ymin = DBL_MAX;
             double xmax = -DBL_MAX, ymax = -DBL_MAX;
+            int cnt = 0;
             for (int i = 0; i < nv; i++) {
                 if (scc_getComponente(scc, i) != c)
                     continue;
@@ -167,8 +170,9 @@ void qry_regs(Sistema *s, double vl) {
                 if (vy < ymin) ymin = vy;
                 if (vx > xmax) xmax = vx;
                 if (vy > ymax) ymax = vy;
+                cnt++;
             }
-            if (xmax < xmin)
+            if (cnt < 2)
                 continue;
             double margem = 10.0;
             double dx = sistema_getDx(s);
