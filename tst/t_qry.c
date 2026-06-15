@@ -110,14 +110,14 @@ void test_qry_registrar_cep_inexistente_nao_valida(void) {
 
 void test_qry_mvm_atualiza_vm(void) {
     /* regiao que contem o ponto medio de v1->v2 = (100, 50)
-       ancora SE (150, 100), w=120, h=80 -> cobre [30..150] x [20..100] */
-    qry_mvm(s, 8.0, 150.0, 100.0, 120.0, 80.0);
+       bbox padrao: xmin=20, ymin=30, w=120, h=40 -> cobre [20..140] x [30..70] */
+    qry_mvm(s, 8.0, 20.0, 30.0, 120.0, 40.0);
     Aresta *a = grafo_primeiraAresta(sistema_getGrafo(s), "v1");
     TEST_ASSERT_DOUBLE_WITHIN(0.001, 8.0, aresta_getVm(a));
 }
 
 void test_qry_mvm_fora_regiao_preserva_vm(void) {
-    /* regiao que NAO contem v1->v2 (ponto medio (100,50) fora de [200,300]x[0,40]) */
+    /* regiao que NAO contem v1->v2 (ponto medio (100,50) fora de [300..400]x[40..80]) */
     qry_mvm(s, 8.0, 300.0, 40.0, 100.0, 40.0);
     Aresta *a = grafo_primeiraAresta(sistema_getGrafo(s), "v1");
     TEST_ASSERT_DOUBLE_WITHIN(0.001, 2.0, aresta_getVm(a));

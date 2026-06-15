@@ -111,8 +111,8 @@ void qry_mvm(Sistema *s, double v, double x, double y, double w, double h) {
     Grafo *g = sistema_getGrafo(s);
     if (g == NULL)
         return;
-    double xmin = x - w, xmax = x;
-    double ymin = y - h, ymax = y;
+    double xmin = x, xmax = x + w;
+    double ymin = y, ymax = y + h;
     int nv = grafo_nVertices(g);
     for (int i = 0; i < nv; i++) {
         Vertice *u = grafo_getVertice(g, i);
