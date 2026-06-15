@@ -65,18 +65,26 @@ int main(int argc, char *argv[]) {
     char *bsd_dir = juntar(bsd, "");
     bsd_dir = garantir_barra(bsd_dir);
 
-    char *base   = nome_base(geo);
-    char *bedgeo = juntar(bed_dir, geo);
-    char *bedvia = via ? juntar(bed_dir, via) : NULL;
-    char *bedqry = qry ? juntar(bed_dir, qry) : NULL;
-    char *svg_out = juntar(bsd_dir, base);
-    char *txt_out = juntar(bsd_dir, base);
+    char *base     = nome_base(geo);
+    char *bedgeo   = juntar(bed_dir, geo);
+    char *bedvia   = via ? juntar(bed_dir, via) : NULL;
+    char *bedqry   = qry ? juntar(bed_dir, qry) : NULL;
+    char *qry_base = qry ? nome_base(qry) : NULL;
 
-    size_t n = strlen(svg_out);
-    char *svg_path = malloc(n + 5);
-    char *txt_path = malloc(n + 5);
-    snprintf(svg_path, n + 5, "%s.svg", svg_out);
-    snprintf(txt_path, n + 5, "%s.txt", txt_out);
+    char *svg_path, *txt_path;
+    if (qry_base != NULL) {
+        size_t n = strlen(bsd_dir) + strlen(base) + strlen(qry_base) + 8;
+        svg_path = malloc(n);
+        txt_path = malloc(n);
+        snprintf(svg_path, n, "%s%s-%s.svg", bsd_dir, base, qry_base);
+        snprintf(txt_path, n, "%s%s-%s.txt", bsd_dir, base, qry_base);
+    } else {
+        size_t n = strlen(bsd_dir) + strlen(base) + 6;
+        svg_path = malloc(n);
+        txt_path = malloc(n);
+        snprintf(svg_path, n, "%s%s.svg", bsd_dir, base);
+        snprintf(txt_path, n, "%s%s.txt", bsd_dir, base);
+    }
 
     Sistema *s = sistema_criar();
     sistema_lerGeo(s, bedgeo);
@@ -100,8 +108,7 @@ int main(int argc, char *argv[]) {
     free(bedgeo);
     free(bedvia);
     free(bedqry);
-    free(svg_out);
-    free(txt_out);
+    free(qry_base);
     free(svg_path);
     free(txt_path);
 
