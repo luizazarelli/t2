@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <float.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 #define MARGEM 50.0
 
@@ -146,10 +151,85 @@ void sistema_fecharSaidas(Sistema *s) {
     }
 }
 
+static void desenhar_aresta_via(FILE *svg, double x1, double y1,
+                                double x2, double y2,
+                                char *ldir, char *lesq,
+                                char *ori_id, char *dst_id) {
+    double dx = x2 - x1, dy = y2 - y1;
+    double len = sqrt(dx*dx + dy*dy);
+    if (len < 1e-9) return;
+
+    double ux = dx/len, uy = dy/len;
+    double px = uy * 4.0, py = -ux * 4.0;  /* perpendicular CCW (SVG y-down) */
+
+    double sx = x1 + ux*4.0, sy = y1 + uy*4.0;
+    double ex = x2 - ux*4.0, ey = y2 - uy*4.0;
+    double mx = (sx+ex)/2.0 + px, my = (sy+ey)/2.0 + py;
+
+    double angle = atan2(dy, dx) * 180.0 / M_PI;
+
+    fprintf(svg,
+        "<path id=\"%s_%s\" d=\"M%.2f,%.2f L%.2f,%.2f L%.2f,%.2f\" "
+        "stroke=\"black\" fill=\"none\" stroke-width=\"1\" marker-end=\"url(#mArrow)\"/>\n",
+        ori_id, dst_id, sx, sy, mx, my, ex, ey);
+
+    if (ldir && strcmp(ldir, "#") != 0)
+        fprintf(svg,
+            "<text x=\"%.2f\" y=\"%.2f\" fill=\"red\" font-size=\"4\" "
+            "text-anchor=\"middle\" transform=\"rotate(%.0f %.2f %.2f)\">%s</text>\n",
+            mx, my, angle, mx, my, ldir);
+
+    if (lesq && strcmp(lesq, "#") != 0) {
+        double lx = mx - 2.0*px, ly = my - 2.0*py;
+        fprintf(svg,
+            "<text x=\"%.2f\" y=\"%.2f\" fill=\"green\" font-size=\"4\" "
+            "text-anchor=\"middle\" transform=\"rotate(%.0f %.2f %.2f)\">%s</text>\n",
+            lx, ly, angle, lx, ly, lesq);
+    }
+}
+
 void sistema_desenharMapa(Sistema *s) {
     if (s == NULL || s->svg == NULL)
         return;
 
+    /* marcador de seta para arestas */
+    fprintf(s->svg,
+        "<defs><marker id=\"mArrow\" markerWidth=\"4\" markerHeight=\"4\" "
+        "refX=\"4\" refY=\"2\" orient=\"auto\">"
+        "<path d=\"M0,0 L0,4 L4,2 z\" style=\"fill: #000000;\"/>"
+        "</marker></defs>\n");
+
+    /* vértices: círculos azuis com rótulo */
+    if (s->grafo != NULL) {
+        int nv = grafo_nVertices(s->grafo);
+
+        /* arestas com V-shape, seta e rótulos ldir/lesq */
+        for (int i = 0; i < nv; i++) {
+            Vertice *u = grafo_getVertice(s->grafo, i);
+            double ux = vertice_getX(u) + s->dx;
+            double uy = vertice_getY(u) + s->dy;
+            for (Aresta *a = grafo_primeiraAresta(s->grafo, vertice_getId(u)); a != NULL; a = aresta_proxima(a)) {
+                Vertice *v = grafo_buscarVertice(s->grafo, aresta_getDst(a));
+                if (v == NULL) continue;
+                double vx = vertice_getX(v) + s->dx;
+                double vy = vertice_getY(v) + s->dy;
+                desenhar_aresta_via(s->svg, ux, uy, vx, vy,
+                                    aresta_getLdir(a), aresta_getLesq(a),
+                                    vertice_getId(u), aresta_getDst(a));
+            }
+        }
+
+        /* vértices por cima das arestas */
+        for (int i = 0; i < nv; i++) {
+            Vertice *v = grafo_getVertice(s->grafo, i);
+            double vx = vertice_getX(v) + s->dx;
+            double vy = vertice_getY(v) + s->dy;
+            svg_circulo(s->svg, vx, vy, 4.0, "blue", "black", 0.5);
+            svg_texto(s->svg, vx, vy, vertice_getId(v), "blue", 4.0);
+        }
+    }
+
+    /* quadras por cima do viário */
     for (int i = 0; i < s->nquadras; i++) {
         Quadra *q = s->quadras[i];
         double rx = quadra_getX(q) + s->dx;
@@ -158,33 +238,8 @@ void sistema_desenharMapa(Sistema *s) {
         double rh = quadra_getH(q);
         svg_retangulo(s->svg, rx, ry, rw, rh,
                       quadra_getCfill(q), quadra_getCstrk(q), quadra_getSw(q));
-        svg_texto(s->svg, rx + rw / 2.0, ry + rh / 2.0,
-                  quadra_getCep(q), "black", 6.0);
-    }
-
-    if (s->grafo == NULL)
-        return;
-
-    int nv = grafo_nVertices(s->grafo);
-    for (int i = 0; i < nv; i++) {
-        Vertice *u = grafo_getVertice(s->grafo, i);
-        for (Aresta *a = grafo_primeiraAresta(s->grafo, vertice_getId(u)); a != NULL; a = aresta_proxima(a)) {
-            Vertice *v = grafo_buscarVertice(s->grafo, aresta_getDst(a));
-            if (v == NULL)
-                continue;
-            svg_linha(s->svg,
-                      vertice_getX(u) + s->dx, vertice_getY(u) + s->dy,
-                      vertice_getX(v) + s->dx, vertice_getY(v) + s->dy,
-                      "gray", 0.5);
-        }
-    }
-
-    for (int i = 0; i < nv; i++) {
-        Vertice *v = grafo_getVertice(s->grafo, i);
-        double vx = vertice_getX(v) + s->dx;
-        double vy = vertice_getY(v) + s->dy;
-        svg_circulo(s->svg, vx, vy, 4.0, "blue", "black", 0.5);
-        svg_texto(s->svg, vx, vy, vertice_getId(v), "blue", 4.0);
+        svg_texto(s->svg, rx + 5.0, ry + 12.0,
+                  quadra_getCep(q), quadra_getCstrk(q), 12.0);
     }
 }
 
