@@ -130,9 +130,9 @@ void quadra_calcularPosicao(Quadra *q, char face, double num, double *px, double
     if (q == NULL || px == NULL || py == NULL)
         return;
     switch (face) {
-        case 'S': *px = q->x - num; *py = q->y;       break;
-        case 'N': *px = q->x - num; *py = q->y - q->h; break;
-        case 'L': *px = q->x;       *py = q->y - num;  break;
-        case 'O': *px = q->x - q->w; *py = q->y - num; break;
+        case 'S': *px = q->x + num;       *py = q->y;       break;
+        case 'N': *px = q->x + num;       *py = q->y + q->h; break;
+        case 'L': *px = q->x;             *py = q->y + num;  break;
+        case 'O': *px = q->x + q->w;      *py = q->y + num;  break;
     }
 }

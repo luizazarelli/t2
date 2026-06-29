@@ -55,7 +55,7 @@ void test_calcularPosicao_face_S(void) {
     Quadra *q = quadra_criar("cep1", 100.0, 200.0, 50.0, 30.0);
     double px, py;
     quadra_calcularPosicao(q, 'S', 10.0, &px, &py);
-    TEST_ASSERT_DOUBLE_WITHIN(0.001, 90.0,  px);
+    TEST_ASSERT_DOUBLE_WITHIN(0.001, 110.0, px);
     TEST_ASSERT_DOUBLE_WITHIN(0.001, 200.0, py);
     quadra_destruir(&q);
 }
@@ -64,8 +64,8 @@ void test_calcularPosicao_face_N(void) {
     Quadra *q = quadra_criar("cep1", 100.0, 200.0, 50.0, 30.0);
     double px, py;
     quadra_calcularPosicao(q, 'N', 10.0, &px, &py);
-    TEST_ASSERT_DOUBLE_WITHIN(0.001, 90.0,  px);
-    TEST_ASSERT_DOUBLE_WITHIN(0.001, 170.0, py);
+    TEST_ASSERT_DOUBLE_WITHIN(0.001, 110.0, px);
+    TEST_ASSERT_DOUBLE_WITHIN(0.001, 230.0, py);
     quadra_destruir(&q);
 }
 
@@ -74,7 +74,7 @@ void test_calcularPosicao_face_L(void) {
     double px, py;
     quadra_calcularPosicao(q, 'L', 5.0, &px, &py);
     TEST_ASSERT_DOUBLE_WITHIN(0.001, 100.0, px);
-    TEST_ASSERT_DOUBLE_WITHIN(0.001, 195.0, py);
+    TEST_ASSERT_DOUBLE_WITHIN(0.001, 205.0, py);
     quadra_destruir(&q);
 }
 
@@ -82,8 +82,8 @@ void test_calcularPosicao_face_O(void) {
     Quadra *q = quadra_criar("cep1", 100.0, 200.0, 50.0, 30.0);
     double px, py;
     quadra_calcularPosicao(q, 'O', 5.0, &px, &py);
-    TEST_ASSERT_DOUBLE_WITHIN(0.001, 50.0,  px);
-    TEST_ASSERT_DOUBLE_WITHIN(0.001, 195.0, py);
+    TEST_ASSERT_DOUBLE_WITHIN(0.001, 150.0, px);
+    TEST_ASSERT_DOUBLE_WITHIN(0.001, 205.0, py);
     quadra_destruir(&q);
 }
 
