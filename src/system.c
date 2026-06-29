@@ -199,11 +199,23 @@ void sistema_desenharMapa(Sistema *s) {
         "<path d=\"M0,0 L0,4 L4,2 z\" style=\"fill: #000000;\"/>"
         "</marker></defs>\n");
 
-    /* vértices: círculos azuis com rótulo */
+    /* 1. quadras (base) */
+    for (int i = 0; i < s->nquadras; i++) {
+        Quadra *q = s->quadras[i];
+        double rx = quadra_getX(q) + s->dx;
+        double ry = quadra_getY(q) + s->dy;
+        double rw = quadra_getW(q);
+        double rh = quadra_getH(q);
+        svg_retangulo(s->svg, rx, ry, rw, rh,
+                      quadra_getCfill(q), quadra_getCstrk(q), quadra_getSw(q));
+        svg_texto(s->svg, rx + 5.0, ry + 12.0,
+                  quadra_getCep(q), quadra_getCstrk(q), 12.0);
+    }
+
     if (s->grafo != NULL) {
         int nv = grafo_nVertices(s->grafo);
 
-        /* arestas com V-shape, seta e rótulos ldir/lesq */
+        /* 2. arestas com V-shape, seta e rótulos ldir/lesq */
         for (int i = 0; i < nv; i++) {
             Vertice *u = grafo_getVertice(s->grafo, i);
             double ux = vertice_getX(u) + s->dx;
@@ -219,7 +231,7 @@ void sistema_desenharMapa(Sistema *s) {
             }
         }
 
-        /* vértices por cima das arestas */
+        /* 3. vértices por cima das arestas */
         for (int i = 0; i < nv; i++) {
             Vertice *v = grafo_getVertice(s->grafo, i);
             double vx = vertice_getX(v) + s->dx;
@@ -227,19 +239,6 @@ void sistema_desenharMapa(Sistema *s) {
             svg_circulo(s->svg, vx, vy, 4.0, "blue", "black", 0.5);
             svg_texto(s->svg, vx, vy, vertice_getId(v), "blue", 4.0);
         }
-    }
-
-    /* quadras por cima do viário */
-    for (int i = 0; i < s->nquadras; i++) {
-        Quadra *q = s->quadras[i];
-        double rx = quadra_getX(q) + s->dx;
-        double ry = quadra_getY(q) + s->dy;
-        double rw = quadra_getW(q);
-        double rh = quadra_getH(q);
-        svg_retangulo(s->svg, rx, ry, rw, rh,
-                      quadra_getCfill(q), quadra_getCstrk(q), quadra_getSw(q));
-        svg_texto(s->svg, rx + 5.0, ry + 12.0,
-                  quadra_getCep(q), quadra_getCstrk(q), 12.0);
     }
 }
 
