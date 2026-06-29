@@ -90,16 +90,32 @@ void qry_registrar(QryEstado *q, Sistema *s, int reg, char *cep, char face, doub
     FILE *txt = sistema_getTxt(s);
 
     if (svg != NULL) {
-        double svgx  = px + sistema_getDx(s);
-        double altura = sistema_getAltura(s);
-        fprintf(svg,
-            "<line x1=\"%.2f\" y1=\"0\" x2=\"%.2f\" y2=\"%.2f\" "
-            "stroke=\"red\" stroke-width=\"1\" stroke-dasharray=\"4,4\"/>\n",
-            svgx, svgx, altura);
-        fprintf(svg,
-            "<text x=\"%.2f\" y=\"12\" font-size=\"10\" fill=\"red\" "
-            "text-anchor=\"middle\">R%d</text>\n",
-            svgx, reg);
+        double svgx = px + sistema_getDx(s);
+        double svgy = py + sistema_getDy(s);
+        double radii[] = {2.5, 5.0, 7.5, 10.0, 12.5};
+        const char *cores[] = {"red", "yellow", "magenta", "red", "yellow"};
+        for (int k = 0; k < 5; k++)
+            fprintf(svg,
+                "<circle cx=\"%.2f\" cy=\"%.2f\" r=\"%.1f\" "
+                "stroke-opacity=\"0.5\" fill=\"none\" stroke=\"%s\" stroke-width=\"2\"/>\n",
+                svgx, svgy, radii[k], cores[k]);
+        if (face == 'S' || face == 'N') {
+            fprintf(svg,
+                "<text x=\"-50\" y=\"%.2f\" fill=\"red\" stroke=\"black\" font-size=\"10\">R%d</text>\n",
+                svgy, reg);
+            fprintf(svg,
+                "<line x1=\"%.2f\" y1=\"%.2f\" x2=\"-50\" y2=\"%.2f\" "
+                "stroke=\"red\" stroke-width=\"2\" stroke-opacity=\"1\" stroke-dasharray=\"5,5\"/>\n",
+                svgx, svgy, svgy);
+        } else {
+            fprintf(svg,
+                "<text x=\"%.2f\" y=\"-50\" fill=\"red\" stroke=\"black\" font-size=\"10\">R%d</text>\n",
+                svgx, reg);
+            fprintf(svg,
+                "<line x1=\"%.2f\" y1=\"%.2f\" x2=\"%.2f\" y2=\"-50\" "
+                "stroke=\"red\" stroke-width=\"2\" stroke-opacity=\"1\" stroke-dasharray=\"5,5\"/>\n",
+                svgx, svgy, svgx);
+        }
     }
     if (txt != NULL)
         fprintf(txt, "R%d: (%.2f, %.2f)\n", reg, px, py);

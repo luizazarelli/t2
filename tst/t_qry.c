@@ -26,7 +26,7 @@
 
     quadra para @o?:
       cep1: ancora (200,200), w=100, h=80
-      face 'S', num=10  ->  px=190, py=200
+      face 'S', num=10  ->  px=210, py=200
 */
 
 static Sistema *s;
@@ -97,7 +97,7 @@ void test_qry_registrar_valido(void) {
 
 void test_qry_registrar_coordenadas(void) {
     qry_registrar(q, s, 0, "cep1", 'S', 10.0);
-    TEST_ASSERT_DOUBLE_WITHIN(0.001, 190.0, qry_getRegX(q, 0));
+    TEST_ASSERT_DOUBLE_WITHIN(0.001, 210.0, qry_getRegX(q, 0));
     TEST_ASSERT_DOUBLE_WITHIN(0.001, 200.0, qry_getRegY(q, 0));
 }
 
