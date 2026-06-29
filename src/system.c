@@ -84,8 +84,8 @@ void sistema_lerGeo(Sistema *s, char *caminho) {
                 s->quadras = realloc(s->quadras, s->capquadras * sizeof(Quadra *));
             }
             s->quadras[s->nquadras++] = q;
-            atualizar_bbox(s, x - w, y - h);
             atualizar_bbox(s, x, y);
+            atualizar_bbox(s, x + w, y + h);
         }
     }
     fclose(f);
@@ -152,8 +152,8 @@ void sistema_desenharMapa(Sistema *s) {
 
     for (int i = 0; i < s->nquadras; i++) {
         Quadra *q = s->quadras[i];
-        double rx = quadra_getX(q) - quadra_getW(q) + s->dx;
-        double ry = quadra_getY(q) - quadra_getH(q) + s->dy;
+        double rx = quadra_getX(q) + s->dx;
+        double ry = quadra_getY(q) + s->dy;
         double rw = quadra_getW(q);
         double rh = quadra_getH(q);
         svg_retangulo(s->svg, rx, ry, rw, rh,
@@ -181,9 +181,10 @@ void sistema_desenharMapa(Sistema *s) {
 
     for (int i = 0; i < nv; i++) {
         Vertice *v = grafo_getVertice(s->grafo, i);
-        svg_circulo(s->svg,
-                    vertice_getX(v) + s->dx, vertice_getY(v) + s->dy,
-                    3.0, "orange", "none", 0.0);
+        double vx = vertice_getX(v) + s->dx;
+        double vy = vertice_getY(v) + s->dy;
+        svg_circulo(s->svg, vx, vy, 4.0, "blue", "black", 0.5);
+        svg_texto(s->svg, vx, vy, vertice_getId(v), "blue", 4.0);
     }
 }
 
