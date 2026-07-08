@@ -133,16 +133,16 @@ void qry_mvm(Sistema *s, double v, double x, double y, double w, double h) {
     for (int i = 0; i < nv; i++) {
         Vertice *u = grafo_getVertice(g, i);
         double ux = vertice_getX(u), uy = vertice_getY(u);
-        bool ori_in = (ux >= xmin && ux <= xmax && uy >= ymin && uy <= ymax);
         for (Aresta *a = grafo_primeiraAresta(g, vertice_getId(u)); a != NULL; a = aresta_proxima(a)) {
             if (!aresta_isAtiva(a))
                 continue;
             Vertice *vv = grafo_buscarVertice(g, aresta_getDst(a));
             if (vv == NULL)
                 continue;
-            double dx = vertice_getX(vv), dy = vertice_getY(vv);
-            bool dst_in = (dx >= xmin && dx <= xmax && dy >= ymin && dy <= ymax);
-            if (ori_in != dst_in)
+            double vx = vertice_getX(vv), vy = vertice_getY(vv);
+            double mx = (ux + vx) / 2.0, my = (uy + vy) / 2.0;
+            bool mid_in = (mx >= xmin && mx <= xmax && my >= ymin && my <= ymax);
+            if (mid_in)
                 aresta_setVm(a, v);
         }
     }
