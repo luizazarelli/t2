@@ -12,8 +12,6 @@
 
 struct Sistema {
     TabelaQuadra *tabela;
-    Quadra **quadras;
-    int nquadras, capquadras;
     Grafo *grafo;
     double min_x, min_y, max_x, max_y;
     FILE *svg;
@@ -31,11 +29,8 @@ Sistema *sistema_criar(void) {
     Sistema *s = malloc(sizeof(Sistema));
     if (s == NULL)
         return NULL;
-    s->tabela     = tabelaQuadra_criar(256);
-    s->quadras    = malloc(16 * sizeof(Quadra *));
-    s->nquadras   = 0;
-    s->capquadras = 16;
-    s->grafo      = NULL;
+    s->tabela = tabelaQuadra_criar(256);
+    s->grafo  = NULL;
     s->min_x      = DBL_MAX;
     s->min_y      = DBL_MAX;
     s->max_x      = -DBL_MAX;
@@ -50,7 +45,6 @@ void sistema_destruir(Sistema **s) {
         return;
     Sistema *sys = *s;
     tabelaQuadra_destruir(&sys->tabela);
-    free(sys->quadras);
     grafo_destruir(&sys->grafo);
     sistema_fecharSaidas(sys);
     free(sys);
@@ -81,11 +75,6 @@ void sistema_lerGeo(Sistema *s, char *caminho) {
             Quadra *q = quadra_criar(cep, x, y, w, h);
             quadra_definirCores(q, sw, cfill, cstrk);
             tabelaQuadra_inserir(s->tabela, q);
-            if (s->nquadras == s->capquadras) {
-                s->capquadras *= 2;
-                s->quadras = realloc(s->quadras, s->capquadras * sizeof(Quadra *));
-            }
-            s->quadras[s->nquadras++] = q;
             atualizar_bbox(s, x, y);
             atualizar_bbox(s, x + w, y + h);
         }
@@ -235,8 +224,10 @@ void sistema_desenharMapa(Sistema *s) {
     }
 
     /* 3. quadras (ret + texto) */
-    for (int i = 0; i < s->nquadras; i++) {
-        Quadra *q = s->quadras[i];
+    int ncap = tabelaQuadra_capacidade(s->tabela);
+    for (int i = 0; i < ncap; i++) {
+        Quadra *q = tabelaQuadra_getSlot(s->tabela, i);
+        if (q == NULL) continue;
         double rx = quadra_getX(q);
         double ry = quadra_getY(q);
         double rw = quadra_getW(q);
