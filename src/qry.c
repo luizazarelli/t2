@@ -101,23 +101,13 @@ void qry_registrar(QryEstado *q, Sistema *s, int reg, char *cep, char face, doub
                 "   <svg:circle cx=\"%.6f\" cy=\"%.6f\" r=\"%.1f\" "
                 "stroke-opacity=\"0.5\" fill=\"none\" stroke=\"%s\" stroke-width=\"2\" />\n",
                 svgx, svgy, radii[k], cores[k]);
-        if (face == 'S' || face == 'N') {
-            fprintf(svg,
-                "   <svg:text x=\"%.6f\" y=\"%.6f\" fill=\"red\" stroke=\"black\" font-size=\"10\">R%d</svg:text>\n",
-                vmx, svgy, reg);
-            fprintf(svg,
-                "   <svg:line x1=\"%.6f\" y1=\"%.6f\" x2=\"%.6f\" y2=\"%.6f\" "
-                "stroke=\"red\" stroke-width=\"2\" stroke-opacity=\"1\" stroke-dasharray=\"5,5\" />\n",
-                svgx, svgy, vmx, svgy);
-        } else {
-            fprintf(svg,
-                "   <svg:text x=\"%.6f\" y=\"%.6f\" fill=\"red\" stroke=\"black\" font-size=\"10\">R%d</svg:text>\n",
-                svgx, vmy, reg);
-            fprintf(svg,
-                "   <svg:line x1=\"%.6f\" y1=\"%.6f\" x2=\"%.6f\" y2=\"%.6f\" "
-                "stroke=\"red\" stroke-width=\"2\" stroke-opacity=\"1\" stroke-dasharray=\"5,5\" />\n",
-                svgx, svgy, svgx, vmy);
-        }
+        fprintf(svg,
+            "   <svg:text x=\"%.6f\" y=\"%.6f\" fill=\"red\" stroke=\"black\" font-size=\"10\">R%d</svg:text>\n",
+            svgx, vmy, reg);
+        fprintf(svg,
+            "   <svg:line x1=\"%.6f\" y1=\"%.6f\" x2=\"%.6f\" y2=\"%.6f\" "
+            "stroke=\"red\" stroke-width=\"2\" stroke-opacity=\"1\" stroke-dasharray=\"5,5\" />\n",
+            svgx, svgy, svgx, vmy);
     }
     if (txt != NULL)
         fprintf(txt, "R%d: (%.2f, %.2f)\n", reg, px, py);
