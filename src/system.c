@@ -173,13 +173,13 @@ static void desenhar_aresta_via(FILE *svg, double x1, double y1,
         "stroke=\"black\" fill=\"none\" stroke-width=\"1\" marker-end=\"url(#mArrow)\"/>\n",
         ori_id, dst_id, sx, sy, mx, my, ex, ey);
 
-    if (ldir && strcmp(ldir, "#") != 0)
+    if (ldir)
         fprintf(svg,
             "<text x=\"%.2f\" y=\"%.2f\" fill=\"red\" font-size=\"4\" "
             "text-anchor=\"middle\" transform=\"rotate(%.0f %.2f %.2f)\">%s</text>\n",
             mx, my, angle, mx, my, ldir);
 
-    if (lesq && strcmp(lesq, "#") != 0) {
+    if (lesq) {
         double lx = mx - 2.0*px, ly = my - 2.0*py;
         fprintf(svg,
             "<text x=\"%.2f\" y=\"%.2f\" fill=\"green\" font-size=\"4\" "
