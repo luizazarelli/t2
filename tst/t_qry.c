@@ -123,6 +123,14 @@ void test_qry_mvm_fora_regiao_preserva_vm(void) {
     TEST_ASSERT_DOUBLE_WITHIN(0.001, 2.0, aresta_getVm(a));
 }
 
+void test_qry_mvm_ambos_vertices_dentro_atualiza(void) {
+    /* v1=(50,50) e v2=(150,50) ambos dentro de [0..200]x[0..100]
+       ponto medio (100,50) tambem dentro -> deve atualizar */
+    qry_mvm(s, 9.0, 0.0, 0.0, 200.0, 100.0);
+    Aresta *a = grafo_primeiraAresta(sistema_getGrafo(s), "v1");
+    TEST_ASSERT_DOUBLE_WITHIN(0.001, 9.0, aresta_getVm(a));
+}
+
 /* --- regs --- */
 
 void test_qry_regs_escreve_txt(void) {
@@ -193,6 +201,7 @@ int main(void) {
     RUN_TEST(test_qry_registrar_cep_inexistente_nao_valida);
     RUN_TEST(test_qry_mvm_atualiza_vm);
     RUN_TEST(test_qry_mvm_fora_regiao_preserva_vm);
+    RUN_TEST(test_qry_mvm_ambos_vertices_dentro_atualiza);
     RUN_TEST(test_qry_regs_escreve_txt);
     RUN_TEST(test_qry_regs_reativa_arestas);
     RUN_TEST(test_qry_exp_aumenta_vm);
