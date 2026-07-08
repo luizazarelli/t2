@@ -7,10 +7,10 @@ UNITY = $(TST)/unity
 
 OBJS = main.o libs.o quadra.o svg.o graph.o paths.o system.o qry.o
 
-PROJECT = ../ted
+PROJECT = ted
 
-$(PROJECT): $(OBJS)
-	$(CC) $(CFLAGS) -o $(PROJECT) $(OBJS) $(LFLAGS)
+ted: $(OBJS)
+	$(CC) $(CFLAGS) -o ted $(OBJS) $(LFLAGS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
