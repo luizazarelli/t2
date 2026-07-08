@@ -101,18 +101,18 @@ void qry_registrar(QryEstado *q, Sistema *s, int reg, char *cep, char face, doub
                 svgx, svgy, radii[k], cores[k]);
         if (face == 'S' || face == 'N') {
             fprintf(svg,
-                "<text x=\"-50\" y=\"%.2f\" fill=\"red\" stroke=\"black\" font-size=\"10\">R%d</text>\n",
+                "<text x=\"0\" y=\"%.2f\" fill=\"red\" stroke=\"black\" font-size=\"10\">R%d</text>\n",
                 svgy, reg);
             fprintf(svg,
-                "<line x1=\"%.2f\" y1=\"%.2f\" x2=\"-50\" y2=\"%.2f\" "
+                "<line x1=\"%.2f\" y1=\"%.2f\" x2=\"0\" y2=\"%.2f\" "
                 "stroke=\"red\" stroke-width=\"2\" stroke-opacity=\"1\" stroke-dasharray=\"5,5\"/>\n",
                 svgx, svgy, svgy);
         } else {
             fprintf(svg,
-                "<text x=\"%.2f\" y=\"-50\" fill=\"red\" stroke=\"black\" font-size=\"10\">R%d</text>\n",
+                "<text x=\"%.2f\" y=\"0\" fill=\"red\" stroke=\"black\" font-size=\"10\">R%d</text>\n",
                 svgx, reg);
             fprintf(svg,
-                "<line x1=\"%.2f\" y1=\"%.2f\" x2=\"%.2f\" y2=\"-50\" "
+                "<line x1=\"%.2f\" y1=\"%.2f\" x2=\"%.2f\" y2=\"0\" "
                 "stroke=\"red\" stroke-width=\"2\" stroke-opacity=\"1\" stroke-dasharray=\"5,5\"/>\n",
                 svgx, svgy, svgx);
         }
