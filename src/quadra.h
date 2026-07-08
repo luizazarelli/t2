@@ -9,6 +9,8 @@ typedef struct TabelaQuadra TabelaQuadra;
 TabelaQuadra *tabelaQuadra_criar(int capacidade);
 /*
     aloca e retorna uma tabela hash vazia para armazenar quadras.
+    usa endereçamento aberto com sondagem linear e rehash automatico
+    quando o fator de carga ultrapassa 70%.
     entrada: capacidade: numero inicial de buckets da tabela hash.
     saida:   ponteiro para a TabelaQuadra criada, ou NULL em caso de falha.
 */
@@ -52,6 +54,8 @@ void quadra_destruir(Quadra **q);
 void tabelaQuadra_inserir(TabelaQuadra *tabela, Quadra *q);
 /*
     insere a quadra na tabela hash indexada pelo CEP da quadra.
+    usa sondagem linear para resolver colisoes. redimensiona a tabela
+    automaticamente se o fator de carga ultrapassar 70%.
     entrada: tabela: tabela hash destino.
              q:      quadra a inserir.
     saida:   nenhuma. nao faz nada se tabela ou q for NULL.
@@ -59,10 +63,27 @@ void tabelaQuadra_inserir(TabelaQuadra *tabela, Quadra *q);
 
 Quadra *tabelaQuadra_buscar(TabelaQuadra *tabela, char *cep);
 /*
-    busca e retorna a quadra com o CEP informado.
+    busca e retorna a quadra com o CEP informado usando sondagem linear.
     entrada: tabela: tabela hash onde buscar.
              cep:    identificador da quadra buscada.
     saida:   ponteiro para a Quadra encontrada, ou NULL se nao existir.
+*/
+
+int tabelaQuadra_capacidade(TabelaQuadra *tabela);
+/*
+    retorna o numero total de slots da tabela (incluindo vazios).
+    usado para iterar sobre todas as quadras sem estrutura auxiliar.
+    entrada: tabela: tabela hash.
+    saida:   numero de slots, ou 0 se tabela for NULL.
+*/
+
+Quadra *tabelaQuadra_getSlot(TabelaQuadra *tabela, int i);
+/*
+    retorna a quadra no slot i, ou NULL se o slot estiver vazio.
+    permite iterar sobre todas as quadras: for i in [0, capacidade).
+    entrada: tabela: tabela hash.
+             i:      indice do slot (0 <= i < capacidade).
+    saida:   ponteiro para a Quadra no slot, ou NULL se vazio ou invalido.
 */
 
 char *quadra_getCep(Quadra *q);
