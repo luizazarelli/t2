@@ -87,6 +87,33 @@ void test_calcularPosicao_face_O(void) {
     quadra_destruir(&q);
 }
 
+void test_tabela_rehash_encontra_todos(void) {
+    TabelaQuadra *t = tabelaQuadra_criar(4);
+    char cep[16];
+    for (int i = 0; i < 20; i++) {
+        snprintf(cep, sizeof(cep), "cep%d", i);
+        tabelaQuadra_inserir(t, quadra_criar(cep, (double)i, 0.0, 5.0, 5.0));
+    }
+    for (int i = 0; i < 20; i++) {
+        snprintf(cep, sizeof(cep), "cep%d", i);
+        TEST_ASSERT_NOT_NULL(tabelaQuadra_buscar(t, cep));
+    }
+    tabelaQuadra_destruir(&t);
+}
+
+void test_tabela_getSlot_itera_quadras(void) {
+    TabelaQuadra *t = tabelaQuadra_criar(8);
+    tabelaQuadra_inserir(t, quadra_criar("aaa", 0.0, 0.0, 1.0, 1.0));
+    tabelaQuadra_inserir(t, quadra_criar("bbb", 1.0, 0.0, 1.0, 1.0));
+    int encontrados = 0;
+    int cap = tabelaQuadra_capacidade(t);
+    for (int i = 0; i < cap; i++)
+        if (tabelaQuadra_getSlot(t, i) != NULL)
+            encontrados++;
+    TEST_ASSERT_EQUAL_INT(2, encontrados);
+    tabelaQuadra_destruir(&t);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_quadra_criar_getters);
@@ -99,5 +126,7 @@ int main(void) {
     RUN_TEST(test_calcularPosicao_face_N);
     RUN_TEST(test_calcularPosicao_face_L);
     RUN_TEST(test_calcularPosicao_face_O);
+    RUN_TEST(test_tabela_rehash_encontra_todos);
+    RUN_TEST(test_tabela_getSlot_itera_quadras);
     return UNITY_END();
 }
