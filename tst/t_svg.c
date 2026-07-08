@@ -17,23 +17,23 @@ void setUp(void) {}
 void tearDown(void) { remove(TMP_PATH); }
 
 void test_svg_criar_retorna_nao_nulo(void) {
-    FILE *f = svg_criar(TMP_PATH, 800.0, 600.0);
+    FILE *f = svg_criar(TMP_PATH, 0.0, 0.0, 800.0, 600.0);
     TEST_ASSERT_NOT_NULL(f);
     svg_fechar(f);
 }
 
 void test_svg_criar_escreve_cabecalho(void) {
-    FILE *f = svg_criar(TMP_PATH, 800.0, 600.0);
+    FILE *f = svg_criar(TMP_PATH, 0.0, 0.0, 800.0, 600.0);
     TEST_ASSERT_TRUE(contem(f, "<?xml"));
     TEST_ASSERT_TRUE(contem(f, "<svg"));
     svg_fechar(f);
 }
 
 void test_svg_fechar_escreve_fechamento(void) {
-    FILE *f = svg_criar(TMP_PATH, 800.0, 600.0);
+    FILE *f = svg_criar(TMP_PATH, 0.0, 0.0, 800.0, 600.0);
     svg_fechar(f);
     f = fopen(TMP_PATH, "r");
-    TEST_ASSERT_TRUE(contem(f, "</svg>"));
+    TEST_ASSERT_TRUE(contem(f, "</svg:svg>"));
     fclose(f);
 }
 
@@ -45,7 +45,7 @@ void test_svg_fechar_null_nao_crasha(void) {
 void test_svg_retangulo(void) {
     FILE *f = tmpfile();
     svg_retangulo(f, 10.0, 20.0, 50.0, 30.0, "red", "blue", 1.5);
-    TEST_ASSERT_TRUE(contem(f, "<rect"));
+    TEST_ASSERT_TRUE(contem(f, "svg:rect"));
     TEST_ASSERT_TRUE(contem(f, "red"));
     TEST_ASSERT_TRUE(contem(f, "blue"));
     fclose(f);
@@ -54,7 +54,7 @@ void test_svg_retangulo(void) {
 void test_svg_circulo(void) {
     FILE *f = tmpfile();
     svg_circulo(f, 100.0, 200.0, 5.0, "green", "black", 1.0);
-    TEST_ASSERT_TRUE(contem(f, "<circle"));
+    TEST_ASSERT_TRUE(contem(f, "svg:circle"));
     TEST_ASSERT_TRUE(contem(f, "green"));
     fclose(f);
 }
@@ -62,7 +62,7 @@ void test_svg_circulo(void) {
 void test_svg_linha(void) {
     FILE *f = tmpfile();
     svg_linha(f, 0.0, 0.0, 100.0, 100.0, "black", 2.0);
-    TEST_ASSERT_TRUE(contem(f, "<line"));
+    TEST_ASSERT_TRUE(contem(f, "svg:line"));
     TEST_ASSERT_TRUE(contem(f, "100"));
     fclose(f);
 }
@@ -70,7 +70,7 @@ void test_svg_linha(void) {
 void test_svg_texto(void) {
     FILE *f = tmpfile();
     svg_texto(f, 50.0, 50.0, "Bitnopolis", "black", 12.0);
-    TEST_ASSERT_TRUE(contem(f, "<text"));
+    TEST_ASSERT_TRUE(contem(f, "svg:text"));
     TEST_ASSERT_TRUE(contem(f, "Bitnopolis"));
     fclose(f);
 }
@@ -80,7 +80,7 @@ void test_svg_percursoAnimado_escreve_path_e_animacao(void) {
     double xs[] = {0.0, 100.0, 200.0};
     double ys[] = {0.0,  50.0, 100.0};
     svg_percursoAnimado(f, "rota1", xs, ys, 3, "blue", 2.0, "red", 5.0);
-    TEST_ASSERT_TRUE(contem(f, "<path"));
+    TEST_ASSERT_TRUE(contem(f, "svg:path"));
     TEST_ASSERT_TRUE(contem(f, "animateMotion"));
     fclose(f);
 }

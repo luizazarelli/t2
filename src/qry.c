@@ -92,29 +92,31 @@ void qry_registrar(QryEstado *q, Sistema *s, int reg, char *cep, char face, doub
     if (svg != NULL) {
         double svgx = px + sistema_getDx(s);
         double svgy = py + sistema_getDy(s);
+        double vmx  = sistema_getViewMinX(s);
+        double vmy  = sistema_getViewMinY(s);
         double radii[] = {2.5, 5.0, 7.5, 10.0, 12.5};
         const char *cores[] = {"red", "yellow", "magenta", "red", "yellow"};
         for (int k = 0; k < 5; k++)
             fprintf(svg,
-                "<circle cx=\"%.2f\" cy=\"%.2f\" r=\"%.1f\" "
-                "stroke-opacity=\"0.5\" fill=\"none\" stroke=\"%s\" stroke-width=\"2\"/>\n",
+                "   <svg:circle cx=\"%.6f\" cy=\"%.6f\" r=\"%.1f\" "
+                "stroke-opacity=\"0.5\" fill=\"none\" stroke=\"%s\" stroke-width=\"2\" />\n",
                 svgx, svgy, radii[k], cores[k]);
         if (face == 'S' || face == 'N') {
             fprintf(svg,
-                "<text x=\"0\" y=\"%.2f\" fill=\"red\" stroke=\"black\" font-size=\"10\">R%d</text>\n",
-                svgy, reg);
+                "   <svg:text x=\"%.6f\" y=\"%.6f\" fill=\"red\" stroke=\"black\" font-size=\"10\">R%d</svg:text>\n",
+                vmx, svgy, reg);
             fprintf(svg,
-                "<line x1=\"%.2f\" y1=\"%.2f\" x2=\"0\" y2=\"%.2f\" "
-                "stroke=\"red\" stroke-width=\"2\" stroke-opacity=\"1\" stroke-dasharray=\"5,5\"/>\n",
-                svgx, svgy, svgy);
+                "   <svg:line x1=\"%.6f\" y1=\"%.6f\" x2=\"%.6f\" y2=\"%.6f\" "
+                "stroke=\"red\" stroke-width=\"2\" stroke-opacity=\"1\" stroke-dasharray=\"5,5\" />\n",
+                svgx, svgy, vmx, svgy);
         } else {
             fprintf(svg,
-                "<text x=\"%.2f\" y=\"0\" fill=\"red\" stroke=\"black\" font-size=\"10\">R%d</text>\n",
-                svgx, reg);
+                "   <svg:text x=\"%.6f\" y=\"%.6f\" fill=\"red\" stroke=\"black\" font-size=\"10\">R%d</svg:text>\n",
+                svgx, vmy, reg);
             fprintf(svg,
-                "<line x1=\"%.2f\" y1=\"%.2f\" x2=\"%.2f\" y2=\"0\" "
-                "stroke=\"red\" stroke-width=\"2\" stroke-opacity=\"1\" stroke-dasharray=\"5,5\"/>\n",
-                svgx, svgy, svgx);
+                "   <svg:line x1=\"%.6f\" y1=\"%.6f\" x2=\"%.6f\" y2=\"%.6f\" "
+                "stroke=\"red\" stroke-width=\"2\" stroke-opacity=\"1\" stroke-dasharray=\"5,5\" />\n",
+                svgx, svgy, svgx, vmy);
         }
     }
     if (txt != NULL)
@@ -195,8 +197,8 @@ void qry_regs(Sistema *s, double vl) {
             double dy = sistema_getDy(s);
             const char *cor = CORES_SCC[c % N_CORES];
             fprintf(svg,
-                "<rect x=\"%.2f\" y=\"%.2f\" width=\"%.2f\" height=\"%.2f\" "
-                "fill=\"%s\" fill-opacity=\"0.5\" stroke=\"%s\" stroke-width=\"1\"/>\n",
+                "   <svg:rect x=\"%.6f\" y=\"%.6f\" width=\"%.6f\" height=\"%.6f\" "
+                "fill=\"%s\" fill-opacity=\"0.5\" stroke=\"%s\" stroke-width=\"1\" />\n",
                 xmin + dx - margem, ymin + dy - margem,
                 xmax - xmin + 2 * margem, ymax - ymin + 2 * margem,
                 cor, cor);

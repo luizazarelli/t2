@@ -123,4 +123,13 @@ double sistema_getDy(Sistema *s);
     saida:   deslocamento em pixels, ou 0.0 se s for NULL.
 */
 
+double sistema_getViewMinX(Sistema *s);
+double sistema_getViewMinY(Sistema *s);
+/*
+    retornam a coordenada minima do viewBox SVG (min_x - MARGEM e min_y - MARGEM).
+    usados por qry para tracing de linhas ate a borda do canvas.
+    entrada: s: sistema.
+    saida:   coordenada minima do viewBox, ou 0.0 se s for NULL.
+*/
+
 #endif

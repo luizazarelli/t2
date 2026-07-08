@@ -3,18 +3,19 @@
 
 #include "libs.h"
 
-FILE *svg_criar(const char *caminho, double largura, double altura);
+FILE *svg_criar(const char *caminho, double vx, double vy, double vw, double vh);
 /*
-    cria e abre um arquivo SVG no caminho informado, escrevendo o cabecalho XML e a tag <svg>.
-    entrada: caminho: caminho do arquivo de saida.
-             largura: largura do canvas SVG.
-             altura:  altura do canvas SVG.
+    cria e abre um arquivo SVG no caminho informado, escrevendo o cabecalho XML
+    e a tag <svg:svg> com o viewBox especificado.
+    entrada: caminho:    caminho do arquivo de saida.
+             vx, vy:     origem do viewBox (coordenadas minimas).
+             vw, vh:     largura e altura do viewBox.
     saida:   ponteiro para o FILE aberto, ou NULL em caso de falha.
 */
 
 void svg_fechar(FILE *svg);
 /*
-    escreve a tag de fechamento </svg> e fecha o arquivo.
+    escreve as tags de fechamento </svg:g> e </svg:svg> e fecha o arquivo.
     entrada: svg: ponteiro para o FILE do SVG.
     saida:   nenhuma. nao faz nada se svg for NULL.
 */
@@ -22,7 +23,7 @@ void svg_fechar(FILE *svg);
 void svg_retangulo(FILE *svg, double x, double y, double w, double h,
                    const char *fill, const char *stroke, double stroke_w);
 /*
-    escreve um elemento <rect> no SVG.
+    escreve um elemento <svg:rect> no SVG.
     entrada: svg:      arquivo SVG destino.
              x, y:     coordenadas do canto superior esquerdo.
              w, h:     largura e altura do retangulo.
@@ -35,7 +36,7 @@ void svg_retangulo(FILE *svg, double x, double y, double w, double h,
 void svg_circulo(FILE *svg, double cx, double cy, double r,
                  const char *fill, const char *stroke, double stroke_w);
 /*
-    escreve um elemento <circle> no SVG.
+    escreve um elemento <svg:circle> no SVG.
     entrada: svg:      arquivo SVG destino.
              cx, cy:   coordenadas do centro.
              r:        raio do circulo.
@@ -48,7 +49,7 @@ void svg_circulo(FILE *svg, double cx, double cy, double r,
 void svg_linha(FILE *svg, double x1, double y1, double x2, double y2,
                const char *stroke, double stroke_w);
 /*
-    escreve um elemento <line> no SVG.
+    escreve um elemento <svg:line> no SVG.
     entrada: svg:      arquivo SVG destino.
              x1, y1:   coordenadas do ponto inicial.
              x2, y2:   coordenadas do ponto final.
@@ -60,7 +61,7 @@ void svg_linha(FILE *svg, double x1, double y1, double x2, double y2,
 void svg_texto(FILE *svg, double x, double y,
                const char *texto, const char *fill, double font_size);
 /*
-    escreve um elemento <text> no SVG.
+    escreve um elemento <svg:text> no SVG.
     entrada: svg:       arquivo SVG destino.
              x, y:      coordenadas da ancora do texto.
              texto:     conteudo textual a exibir.
@@ -74,8 +75,8 @@ void svg_percursoAnimado(FILE *svg, const char *id,
                          const char *cor_rota, double stroke_w,
                          const char *cor_marcador, double dur);
 /*
-    desenha o percurso como um <path> e adiciona dois marcadores animados (I e F)
-    que percorrem o caminho usando <animateMotion>.
+    desenha o percurso como um <svg:path> e adiciona dois marcadores animados
+    (I e F) que percorrem o caminho usando <svg:animateMotion>.
     entrada: svg:          arquivo SVG destino.
              id:           identificador unico do path no SVG.
              xs, ys:       arrays com as coordenadas x e y dos pontos do percurso.
