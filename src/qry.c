@@ -92,7 +92,6 @@ void qry_registrar(QryEstado *q, Sistema *s, int reg, char *cep, char face, doub
     if (svg != NULL) {
         double svgx = px + sistema_getDx(s);
         double svgy = py + sistema_getDy(s);
-        double vmx  = sistema_getViewMinX(s);
         double vmy  = sistema_getViewMinY(s);
         double radii[] = {2.5, 5.0, 7.5, 10.0, 12.5};
         const char *cores[] = {"red", "yellow", "magenta", "red", "yellow"};
@@ -116,6 +115,13 @@ void qry_registrar(QryEstado *q, Sistema *s, int reg, char *cep, char face, doub
 void qry_mvm(Sistema *s, double v, double x, double y, double w, double h) {
     if (s == NULL)
         return;
+    FILE *svg = sistema_getSvg(s);
+    if (svg != NULL)
+        fprintf(svg,
+            "   <svg:rect width=\"%.6f\" height=\"%.6f\" x=\"%.6f\" y=\"%.6f\" "
+            "fill=\"red\" stroke=\"red\" stroke-width=\"1\" fill-opacity=\"0.300000\" "
+            "rx=\"0.000000\" ry=\"0.000000\" stroke-dasharray=\"3, 3\" />\n",
+            w, h, x, y);
     Grafo *g = sistema_getGrafo(s);
     if (g == NULL)
         return;
