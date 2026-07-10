@@ -228,6 +228,34 @@ void test_scc_aresta_inativa_quebra_ciclo(void) {
     grafo_destruir(&g);
 }
 
+void test_scc_getComponente_indice_invalido(void) {
+    Grafo *g = grafo_ciclo();
+    CompConexos *s = scc_calcular(g);
+    TEST_ASSERT_EQUAL_INT(-1, scc_getComponente(s, -1));
+    TEST_ASSERT_EQUAL_INT(-1, scc_getComponente(s, 99));
+    scc_destruir(&s);
+    grafo_destruir(&g);
+}
+
+void test_agm_getAresta_valida_vm_abaixo_limiar(void) {
+    Grafo *g = grafo_ciclo();
+    AGM *a = agm_calcular(g, 2.0);
+    Aresta *ar = agm_getAresta(a, 0);
+    TEST_ASSERT_NOT_NULL(ar);
+    TEST_ASSERT_TRUE(aresta_getVm(ar) < 2.0);
+    agm_destruir(&a);
+    grafo_destruir(&g);
+}
+
+void test_caminho_getVertice_indice_invalido(void) {
+    Grafo *g = grafo_dijkstra();
+    Caminho *c = caminho_calcularDistancia(g, "v1", "v2");
+    TEST_ASSERT_NULL(caminho_getVertice(c, -1));
+    TEST_ASSERT_NULL(caminho_getVertice(c, 99));
+    caminho_destruir(&c);
+    grafo_destruir(&g);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_caminho_destruir_seta_null);
@@ -248,5 +276,8 @@ int main(void) {
     RUN_TEST(test_scc_ciclo_unico);
     RUN_TEST(test_scc_linear);
     RUN_TEST(test_scc_aresta_inativa_quebra_ciclo);
+    RUN_TEST(test_scc_getComponente_indice_invalido);
+    RUN_TEST(test_agm_getAresta_valida_vm_abaixo_limiar);
+    RUN_TEST(test_caminho_getVertice_indice_invalido);
     return UNITY_END();
 }
