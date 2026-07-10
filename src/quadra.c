@@ -1,4 +1,5 @@
 #include "quadra.h"
+#include "hash.h"
 #include <stdlib.h>
 
 struct Quadra {
@@ -10,44 +11,15 @@ struct Quadra {
 };
 
 struct TabelaQuadra {
-    int capacidade;
-    int ocupados;
-    Quadra **buckets;
+    Hash *h;
 };
-
-static int hash(char *cep, int capacidade) {
-    unsigned int h = 0;
-    for (int i = 0; cep[i]; i++)
-        h = h * 31 + (unsigned char)cep[i];
-    return (int)(h % (unsigned int)capacidade);
-}
-
-static void tabelaQuadra_redimensionar(TabelaQuadra *t) {
-    int nova_cap = t->capacidade * 2;
-    Quadra **novos = calloc(nova_cap, sizeof(Quadra *));
-    if (novos == NULL)
-        return;
-    for (int i = 0; i < t->capacidade; i++) {
-        if (t->buckets[i] == NULL)
-            continue;
-        int j = hash(t->buckets[i]->cep, nova_cap);
-        while (novos[j] != NULL)
-            j = (j + 1) % nova_cap;
-        novos[j] = t->buckets[i];
-    }
-    free(t->buckets);
-    t->buckets   = novos;
-    t->capacidade = nova_cap;
-}
 
 TabelaQuadra *tabelaQuadra_criar(int capacidade) {
     TabelaQuadra *t = malloc(sizeof(TabelaQuadra));
     if (t == NULL)
         return NULL;
-    t->capacidade = capacidade;
-    t->ocupados   = 0;
-    t->buckets    = calloc(capacidade, sizeof(Quadra *));
-    if (t->buckets == NULL) {
+    t->h = hash_criar(capacidade);
+    if (t->h == NULL) {
         free(t);
         return NULL;
     }
@@ -58,10 +30,13 @@ void tabelaQuadra_destruir(TabelaQuadra **tabela) {
     if (tabela == NULL || *tabela == NULL)
         return;
     TabelaQuadra *t = *tabela;
-    for (int i = 0; i < t->capacidade; i++)
-        if (t->buckets[i] != NULL)
-            quadra_destruir(&t->buckets[i]);
-    free(t->buckets);
+    int cap = hash_capacidade(t->h);
+    for (int i = 0; i < cap; i++) {
+        Quadra *q = (Quadra *)hash_getSlot(t->h, i);
+        if (q != NULL)
+            quadra_destruir(&q);
+    }
+    hash_destruir(&t->h);
     free(t);
     *tabela = NULL;
 }
@@ -104,35 +79,23 @@ void quadra_destruir(Quadra **q) {
 void tabelaQuadra_inserir(TabelaQuadra *tabela, Quadra *q) {
     if (tabela == NULL || q == NULL)
         return;
-    if (tabela->ocupados * 10 >= tabela->capacidade * 7)
-        tabelaQuadra_redimensionar(tabela);
-    int i = hash(q->cep, tabela->capacidade);
-    while (tabela->buckets[i] != NULL)
-        i = (i + 1) % tabela->capacidade;
-    tabela->buckets[i] = q;
-    tabela->ocupados++;
+    hash_inserir(tabela->h, q->cep, q);
 }
 
 Quadra *tabelaQuadra_buscar(TabelaQuadra *tabela, char *cep) {
     if (tabela == NULL || cep == NULL)
         return NULL;
-    int i = hash(cep, tabela->capacidade);
-    while (tabela->buckets[i] != NULL) {
-        if (strcmp(tabela->buckets[i]->cep, cep) == 0)
-            return tabela->buckets[i];
-        i = (i + 1) % tabela->capacidade;
-    }
-    return NULL;
+    return (Quadra *)hash_buscar(tabela->h, cep);
 }
 
 int tabelaQuadra_capacidade(TabelaQuadra *tabela) {
-    return tabela ? tabela->capacidade : 0;
+    return tabela ? hash_capacidade(tabela->h) : 0;
 }
 
 Quadra *tabelaQuadra_getSlot(TabelaQuadra *tabela, int i) {
-    if (tabela == NULL || i < 0 || i >= tabela->capacidade)
+    if (tabela == NULL)
         return NULL;
-    return tabela->buckets[i];
+    return (Quadra *)hash_getSlot(tabela->h, i);
 }
 
 char *quadra_getCep(Quadra *q)   { return q ? q->cep   : NULL; }
@@ -148,7 +111,7 @@ void quadra_calcularPosicao(Quadra *q, char face, double num, double *px, double
     if (q == NULL || px == NULL || py == NULL)
         return;
     switch (face) {
-        case 'S': *px = q->x + num;  *py = q->y;       break;
+        case 'S': *px = q->x + num;  *py = q->y;        break;
         case 'N': *px = q->x + num;  *py = q->y + q->h; break;
         case 'L': *px = q->x;        *py = q->y + num;  break;
         case 'O': *px = q->x + q->w; *py = q->y + num;  break;

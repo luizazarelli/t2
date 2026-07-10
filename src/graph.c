@@ -1,4 +1,5 @@
 #include "graph.h"
+#include "hash.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -21,38 +22,24 @@ struct Vertice {
     Aresta *arestas;
 };
 
-struct NoHash {
-    Vertice *v;
-    struct NoHash *prox;
-};
-
 struct Grafo {
     int n;
     int cap;
     Vertice **arr;
-    int hcap;
-    struct NoHash **htab;
+    Hash *htab;
 };
-
-static int hash_id(char *id, int hcap) {
-    unsigned int h = 0;
-    for (int i = 0; id[i]; i++)
-        h = h * 31 + (unsigned char)id[i];
-    return (int)(h % (unsigned int)hcap);
-}
 
 Grafo *grafo_criar(int capacidade) {
     Grafo *g = malloc(sizeof(Grafo));
     if (g == NULL)
         return NULL;
-    g->n    = 0;
-    g->cap  = capacidade > 0 ? capacidade : 16;
-    g->hcap = g->cap * 2 + 1;
+    g->n   = 0;
+    g->cap = capacidade > 0 ? capacidade : 16;
     g->arr  = calloc(g->cap, sizeof(Vertice *));
-    g->htab = calloc(g->hcap, sizeof(struct NoHash *));
+    g->htab = hash_criar(g->cap * 2 + 1);
     if (g->arr == NULL || g->htab == NULL) {
         free(g->arr);
-        free(g->htab);
+        hash_destruir(&g->htab);
         free(g);
         return NULL;
     }
@@ -79,16 +66,8 @@ void grafo_destruir(Grafo **g) {
         free(v->id);
         free(v);
     }
-    for (int i = 0; i < gr->hcap; i++) {
-        struct NoHash *no = gr->htab[i];
-        while (no != NULL) {
-            struct NoHash *prox = no->prox;
-            free(no);
-            no = prox;
-        }
-    }
+    hash_destruir(&gr->htab);
     free(gr->arr);
-    free(gr->htab);
     free(gr);
     *g = NULL;
 }
@@ -115,27 +94,13 @@ void grafo_inserirVertice(Grafo *g, char *id, double x, double y) {
     v->idx    = g->n;
     v->arestas = NULL;
     g->arr[g->n++] = v;
-
-    struct NoHash *no = malloc(sizeof(struct NoHash));
-    if (no == NULL)
-        return;
-    int i = hash_id(id, g->hcap);
-    no->v    = v;
-    no->prox = g->htab[i];
-    g->htab[i] = no;
+    hash_inserir(g->htab, id, v);
 }
 
 Vertice *grafo_buscarVertice(Grafo *g, char *id) {
     if (g == NULL || id == NULL)
         return NULL;
-    int i = hash_id(id, g->hcap);
-    struct NoHash *no = g->htab[i];
-    while (no != NULL) {
-        if (strcmp(no->v->id, id) == 0)
-            return no->v;
-        no = no->prox;
-    }
-    return NULL;
+    return (Vertice *)hash_buscar(g->htab, id);
 }
 
 int grafo_nVertices(Grafo *g) {
