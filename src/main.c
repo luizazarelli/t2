@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <sys/stat.h>
+#include <errno.h>
 
 static char *juntar(char *dir, char *arq) {
     if (dir == NULL || arq == NULL)
@@ -61,6 +63,11 @@ int main(int argc, char *argv[]) {
 
     char *bed_dir = bed ? juntar(bed, "") : juntar("", "");
     bed_dir = garantir_barra(bed_dir);
+
+    if (mkdir(bsd, 0755) != 0 && errno != EEXIST) {
+        fprintf(stderr, "erro: nao foi possivel criar diretorio de saida: %s\n", bsd);
+        return 1;
+    }
 
     char *bsd_dir = juntar(bsd, "");
     bsd_dir = garantir_barra(bsd_dir);
