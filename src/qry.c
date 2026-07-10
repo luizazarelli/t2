@@ -92,7 +92,7 @@ void qry_registrar(QryEstado *q, Sistema *s, int reg, char *cep, char face, doub
     if (svg != NULL) {
         double svgx = px + sistema_getDx(s);
         double svgy = py + sistema_getDy(s);
-        double vmy  = sistema_getViewMinY(s);
+        double vmx  = sistema_getViewMinX(s);
         double radii[] = {2.5, 5.0, 7.5, 10.0, 12.5};
         const char *cores[] = {"red", "yellow", "magenta", "red", "yellow"};
         for (int k = 0; k < 5; k++)
@@ -102,11 +102,11 @@ void qry_registrar(QryEstado *q, Sistema *s, int reg, char *cep, char face, doub
                 svgx, svgy, radii[k], cores[k]);
         fprintf(svg,
             "   <svg:text x=\"%.6f\" y=\"%.6f\" fill=\"red\" stroke=\"black\" font-size=\"10\">R%d</svg:text>\n",
-            svgx, vmy, reg);
+            vmx, svgy, reg);
         fprintf(svg,
             "   <svg:line x1=\"%.6f\" y1=\"%.6f\" x2=\"%.6f\" y2=\"%.6f\" "
             "stroke=\"red\" stroke-width=\"2\" stroke-opacity=\"1\" stroke-dasharray=\"5,5\" />\n",
-            svgx, svgy, svgx, vmy);
+            svgx, svgy, vmx, svgy);
     }
     if (txt != NULL)
         fprintf(txt, "R%d: (%.2f, %.2f)\n", reg, px, py);
